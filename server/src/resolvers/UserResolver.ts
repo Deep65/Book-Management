@@ -13,11 +13,24 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
-  async findUser(@Arg("ida", () => ID) id: ObjectId): Promise<User | null> {
+  async findUser(@Arg("ida", () => ID) id: any): Promise<User | null> {
     if (!id) {
       throw new Error("ID is required");
     }
-    const user = await User.findOne({ where: { id } });
+
+    console.log("id:", id);
+    console.log("type of id:", typeof id);
+
+    // Check if the id is a valid ObjectId
+    if (!ObjectId.isValid(id)) {
+      throw new Error("Invalid ID format");
+    }
+
+    const newId = new ObjectId(id);
+    console.log("new ObjectId:", newId);
+    console.log("type of newId:", typeof newId);
+
+    const user = await User.findOne({ where: { _id: newId } });
 
     if (!user) {
       throw new Error("User not found");
@@ -51,7 +64,7 @@ export class UserResolver {
     if (!isValidPassword) return "Password doesn't match";
 
     const token = jwt.sign(
-      { userId: existingUser.id, email: existingUser.email },
+      { userId: existingUser._id, email: existingUser.email },
       process.env.JWT_SECRET as string,
       { expiresIn: "12h" }
     );

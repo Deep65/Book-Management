@@ -14,7 +14,7 @@ export class BookResolver {
 
     const books = await Book.find({
       where: {
-        user: existingUser, // Ensure existingUser.id is already in ObjectId format
+        user: existingUser,
       },
     });
 
@@ -36,14 +36,18 @@ export class BookResolver {
 
   @Mutation(() => Book)
   async updateBook(
-    @Arg("id", () => ID) id: ObjectId,
+    @Arg("_id", () => ID) _id: ObjectId,
     @Arg("args", () => BookInput) args: BookInput,
     @Ctx() { existingUser }: authContext
   ): Promise<Book | undefined> {
     if (!existingUser) {
       throw new Error("Not authenticated");
     }
-    const book = await Book.findOne({ where: { id, user: existingUser } });
+    const objectId = new ObjectId(_id);
+
+    const book = await Book.findOne({
+      where: { _id: objectId, user: existingUser },
+    });
     if (!book) {
       throw new Error("Book not found or you're not authorized to update it");
     }
@@ -54,15 +58,17 @@ export class BookResolver {
 
   @Mutation(() => Boolean)
   async deleteBook(
-    @Arg("ida", () => ID) id: ObjectId,
+    @Arg("_id", () => ID) _id: ObjectId,
     @Ctx() { existingUser }: authContext
   ): Promise<Boolean> {
     if (!existingUser) {
       throw new Error("Not authenticated");
     }
-    console.log("id", id);
+
+    const objectId = new ObjectId(_id);
+    console.log("id", typeof _id);
     const findExistingBook = await Book.findOne({
-      where: { id },
+      where: { _id: objectId, user: existingUser },
     });
 
     if (!findExistingBook) {
