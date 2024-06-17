@@ -1,6 +1,14 @@
-import { Entity, ObjectIdColumn, ObjectId, Column, BaseEntity } from "typeorm";
+import {
+  Entity,
+  ObjectIdColumn,
+  ObjectId,
+  Column,
+  BaseEntity,
+  OneToMany,
+} from "typeorm";
 import { Field, ID, ObjectType } from "type-graphql";
 import { Length, IsEmail } from "class-validator";
+import { Book } from "./Book";
 
 @Entity()
 @ObjectType()
@@ -19,8 +27,13 @@ export class User extends BaseEntity {
   @IsEmail()
   email: string;
 
-  // You might want to omit @Field() for sensitive fields like 'password'
-
   @Column("text")
   password: string;
+
+  @Field(() => [Book], {
+    nullable: true,
+    description: "Books possessed by a user",
+  })
+  @OneToMany(() => Book, (book) => book.user)
+  books?: Book[];
 }

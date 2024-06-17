@@ -1,14 +1,29 @@
-import { Resolver, Query, Mutation, Arg } from "type-graphql";
+import { Resolver, Query, Mutation, Arg, ID } from "type-graphql";
 import { User } from "../entities/User.js";
 import { UserLogin, UserRegisteration } from "../types/UserInput.js";
 import { hashPassword, verifyPassword } from "../utils/commonFuntions.js";
 import jwt from "jsonwebtoken";
+import { ObjectId } from "mongodb";
 
 @Resolver()
 export class UserResolver {
   @Query(() => [User])
   async users(): Promise<User[]> {
     return User.find();
+  }
+
+  @Query(() => User, { nullable: true })
+  async findUser(@Arg("ida", () => ID) id: ObjectId): Promise<User | null> {
+    if (!id) {
+      throw new Error("ID is required");
+    }
+    const user = await User.findOne({ where: { id } });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
   }
 
   @Mutation(() => User)
@@ -38,7 +53,7 @@ export class UserResolver {
     const token = jwt.sign(
       { userId: existingUser.id, email: existingUser.email },
       process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
+      { expiresIn: "12h" }
     );
 
     return token;

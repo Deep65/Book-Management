@@ -1,6 +1,14 @@
-import { Entity, ObjectIdColumn, ObjectId, Column, BaseEntity } from "typeorm";
+import {
+  Entity,
+  ObjectIdColumn,
+  ObjectId,
+  Column,
+  BaseEntity,
+  ManyToOne,
+} from "typeorm";
 import { Field, ID, ObjectType } from "type-graphql";
 import { Length } from "class-validator";
+import { User } from "./User";
 
 @Entity()
 @ObjectType()
@@ -23,4 +31,8 @@ export class Book extends BaseEntity {
   @Column("text")
   @Length(1, 20)
   genre: string;
+
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.books)
+  user: User;
 }
