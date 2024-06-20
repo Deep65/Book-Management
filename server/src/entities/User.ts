@@ -7,6 +7,8 @@ import { ObjectId } from "mongodb";
 @Entity()
 @ObjectType()
 export class User extends BaseEntity {
+
+  @Field(() => ID)
   @ObjectIdColumn()
   _id: ObjectId;
 

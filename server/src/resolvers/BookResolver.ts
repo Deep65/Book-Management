@@ -21,6 +21,29 @@ export class BookResolver {
     return books;
   }
 
+  @Query(() => Book)
+  async findBookById(
+    @Arg("_id", () => ID) _id: ObjectId,
+    @Ctx() { existingUser }: authContext
+  ): Promise<Book> {
+    if (!existingUser) {
+      throw new Error("User not authenticated");
+    }
+    const objectId = new ObjectId(_id);
+
+    const book = await Book.findOne({
+      where: {
+        _id: objectId,
+      },
+    });
+
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    return book;
+  }
+
   @Mutation(() => Book)
   async addBook(
     @Arg("args", () => BookInput) args: BookInput,
