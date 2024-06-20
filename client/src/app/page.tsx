@@ -1,6 +1,7 @@
 import { getClient } from "../../lib/apolloClient";
 import { gql } from "@apollo/client";
 import { GET_USERS } from "../../lib/queries/user";
+import BooksListPage from "./books/page";
 
 const query = gql`
   query {
@@ -19,21 +20,8 @@ export default async function Page() {
   const array = data.users;
   return (
     <>
-      <p className="text-black">Hola</p>
-      {/* {array.map((item: any) => {
-        <>
-          <div className="text-black bg-red">Email:- {item.email}</div>
-          <div>Name:- {item.name}</div>
-        </>;
-      })} */}
-
-      {array.map((item: any, index: number) => (
-        <div key={index}>
-          <div className="text-black bg-red">Email: {item.email}</div>
-          <div>Name: {item.name}</div>
-        </div>
-      ))}
-      <p className="text-black">Hola</p>
+     
+     <BooksListPage/>
     </>
   );
 }

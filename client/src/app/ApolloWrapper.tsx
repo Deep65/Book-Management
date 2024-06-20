@@ -8,6 +8,8 @@ import {
   InMemoryCache,
   SSRMultipartLink,
 } from "@apollo/experimental-nextjs-app-support";
+import { setContext } from "@apollo/client/link/context";
+import { getCookie } from 'cookies-next';
 
 // have a function to create a client for you
 function makeClient() {
@@ -23,11 +25,24 @@ function makeClient() {
     // const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { cache: "force-cache" }}});
   });
 
+  const authLink = setContext((_, { headers }) => {
+    // Get the authentication token from cookies if it exists
+    const token = getCookie('token');
+    
+    // Return the headers to the context so httpLink can read them
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      }
+    };
+  });
+
   // use the `ApolloClient` from "@apollo/experimental-nextjs-app-support"
   return new ApolloClient({
     // use the `InMemoryCache` from "@apollo/experimental-nextjs-app-support"
     cache: new InMemoryCache(),
-    link: httpLink,
+    link: authLink.concat(httpLink),
   });
 }
 

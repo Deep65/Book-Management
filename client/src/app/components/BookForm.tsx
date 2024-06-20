@@ -1,12 +1,11 @@
 "use client";
 import { useMutation, useQuery } from "@apollo/client";
 import { ADD_BOOK, UPDATE_BOOK } from "../../../lib/mutations/book"; // Import your queries and mutations
-import { GET_BOOK_BY_ID } from "../../../lib/queries/book";
+import { GET_BOOK_BY_ID, GET_BOOKS } from "../../../lib/queries/book";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
-import { getCookie } from 'cookies-next';
 import { useEffect } from "react";
 
 interface IBookForm {
@@ -34,30 +33,19 @@ const BookForm: React.FC<BookFormProps> = ({ bookId, mode }) => {
     resolver: yupResolver(schema)
   });
 
-  const [addBook, { loading: addLoading, error: addError }] = useMutation(ADD_BOOK, {
-    context: {
-      headers: {
-        authorization: `Bearer ${getCookie('token')}`, // Pass the token in headers
-      },
-    },
+  const [addBook, { loading: addLoading, error: addError }] = useMutation(ADD_BOOK,{
+    refetchQueries: [{ query: GET_BOOKS }]
   });
 
-  const [updateBook, { loading: updateLoading, error: updateError }] = useMutation(UPDATE_BOOK, {
-    context: {
-      headers: {
-        authorization: `Bearer ${getCookie('token')}`, // Pass the token in headers
-      },
-    },
-  });
+  const [updateBook, { loading: updateLoading, error: updateError }] = useMutation(UPDATE_BOOK,{
+    refetchQueries: [{ query: GET_BOOKS }]
+  }
+    
+  );
 
   const { data: bookData, loading: bookLoading } = useQuery(GET_BOOK_BY_ID, {
     variables:{bookId} ,
     skip: mode === "add",
-    context: {
-        headers: {
-          authorization: `Bearer ${getCookie('token')}`, // Pass the token in headers
-        },
-      },
   });
 
   useEffect(() => {

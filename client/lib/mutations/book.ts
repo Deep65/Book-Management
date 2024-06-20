@@ -20,4 +20,9 @@ const UPDATE_BOOK = gql`
   }
 `;
 
-export { ADD_BOOK, UPDATE_BOOK };
+const DELETE_BOOK = gql`
+  mutation ($id: ID!){
+    deleteBook(_id: $id)
+  }`
+
+export { ADD_BOOK, UPDATE_BOOK, DELETE_BOOK};
