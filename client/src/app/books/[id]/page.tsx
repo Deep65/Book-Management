@@ -1,8 +1,13 @@
-import BookForm from '@/app/components/BookForm'
+import BookForm from "@/app/components/BookForm";
 
-const UpdateBook = ({params}:any) => {
-  console.log(params)
-    return <BookForm mode='update' bookId={params.id}/>
-}
+type UpdateBookParams = {
+  params: {
+    id: string;
+  };
+};
 
-export default UpdateBook
+const UpdateBook = ({ params }: UpdateBookParams) => {
+  return <BookForm mode="update" bookId={params.id} />;
+};
+
+export default UpdateBook;

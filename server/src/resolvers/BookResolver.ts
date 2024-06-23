@@ -89,7 +89,6 @@ export class BookResolver {
     }
 
     const objectId = new ObjectId(_id);
-    console.log("id", typeof _id);
     const findExistingBook = await Book.findOne({
       where: { _id: objectId, user: existingUser },
     });

@@ -1,42 +1,28 @@
 "use client";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { GET_BOOKS } from "./../../../lib/queries/book";
-import { DELETE_BOOK } from "./../../../lib/mutations/book";
-import { useRouter } from "next/navigation";
-import { getCookie } from 'cookies-next';
 import Link from "next/link";
 import EditButton from "@/app/components/EditButton";
 import DeleteButton from "@/app/components/DeleteButton";
+import Loading from "../loading";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+type Book = {
+  _id: string;
+  author: string;
+  title: string;
+  genre: string;
+};
 
 const BooksListPage = () => {
-  const router = useRouter();
+  const { data, loading, error } = useQuery(GET_BOOKS);
 
-  const { data, loading, error } = useQuery(GET_BOOKS, {
-    context: {
-      headers: {
-        authorization: `Bearer ${getCookie('token')}`, // Pass the token in headers
-      },
-    },
-  });
-
-  const [deleteBook] = useMutation(DELETE_BOOK, {
-    refetchQueries: [{ query: GET_BOOKS }],
-  });
-
-  const handleEdit = (id: string) => {
-    router.push(`/books/${id}`);
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteBook({ variables: { id } });
-    } catch (err) {
-      console.error("Delete book error", err);
-    }
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return <Loading />;
+  if (error) {
+    toast.error(error.message);
+    return <p className="text-red-500">Error: {error.message}</p>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 text-black">
@@ -52,22 +38,26 @@ const BooksListPage = () => {
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Genre</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              {["Title", "Genre", "Author", "Actions"].map((header) => (
+                <th
+                  key={header}
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {data.books.map((book: any) => (
+            {data.books.map((book: Book) => (
               <tr key={book._id}>
                 <td className="px-6 py-4 whitespace-nowrap">{book.title}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{book.genre}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{book.author}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex space-x-2">
-                    <EditButton bookId={book._id}/>
-                    <DeleteButton  bookId={book._id}/>
+                    <EditButton bookId={book._id} />
+                    <DeleteButton bookId={book._id} />
                   </div>
                 </td>
               </tr>

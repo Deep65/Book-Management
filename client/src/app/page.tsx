@@ -1,27 +1,11 @@
-import { getClient } from "../../lib/apolloClient";
-import { gql } from "@apollo/client";
-import { GET_USERS } from "../../lib/queries/user";
-import BooksListPage from "./books/page";
+import { cookies } from "next/headers";
 
-const query = gql`
-  query {
-    users {
-      email
-      name
-    }
-  }
-`;
+import BooksListPage from "./books/page";
+import Register from "./(auth)/register/page";
 
 export default async function Page() {
-  const { data } = await getClient().query({query: GET_USERS});
-  // const { loading, error, data } = useQuery(GET_CLIENTS);
+  const cookieStore = cookies();
+  const token = cookieStore.get("token");
 
-  console.log("sat", data.users);
-  const array = data.users;
-  return (
-    <>
-     
-     <BooksListPage/>
-    </>
-  );
+  return <>{token ? <BooksListPage /> : <Register />}</>;
 }

@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { cookies } from "next/headers";
 import { FaHome } from "react-icons/fa";
-
+import LogoutButton from "./LogoutButton";
 const Header = () => {
-//   const router = useRouter();
-
   return (
     <header className="bg-blue-500 text-white p-4 flex justify-between items-center">
       <div>
@@ -16,9 +14,8 @@ const Header = () => {
         </Link>
       </div>
       <nav>
-        <ul className="flex space-x-4">
-        
-          {/* Add more navigation links as needed */}
+        <ul className="flex space-x-4 cursor-pointer">
+          <LogoutButton />
         </ul>
       </nav>
     </header>

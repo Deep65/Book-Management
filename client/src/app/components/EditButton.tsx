@@ -1,18 +1,18 @@
-"use client"
+"use client";
 import { FaEdit } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
-const EditButton = ({bookId} : any) => {
-    const router = useRouter();
-    const handleEdit = (id: string) => {
-        router.push(`/books/${id}`);
-      };
+const EditButton = ({ bookId }: { bookId: string }) => {
+  const router = useRouter();
+  const handleEdit = (bookId: string) => {
+    router.push(`/books/${bookId}`);
+  };
   return (
     <FaEdit
-        className="icon cursor-pointer text-blue-500"
-        onClick={() => handleEdit(bookId)}
-  />
-  )
-}
+      className="icon cursor-pointer text-blue-500"
+      onClick={() => handleEdit(bookId)}
+    />
+  );
+};
 
-export default EditButton
+export default EditButton;

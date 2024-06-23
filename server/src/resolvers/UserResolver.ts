@@ -18,17 +18,12 @@ export class UserResolver {
       throw new Error("ID is required");
     }
 
-    console.log("id:", id);
-    console.log("type of id:", typeof id);
-
     // Check if the id is a valid ObjectId
     if (!ObjectId.isValid(id)) {
       throw new Error("Invalid ID format");
     }
 
     const newId = new ObjectId(id);
-    console.log("new ObjectId:", newId);
-    console.log("type of newId:", typeof newId);
 
     const user = await User.findOne({ where: { _id: newId } });
 
