@@ -7,6 +7,7 @@ import DeleteButton from "@/app/components/DeleteButton";
 import Loading from "../loading";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
 
 type Book = {
   _id: string;
@@ -16,7 +17,11 @@ type Book = {
 };
 
 const BooksListPage = () => {
-  const { data, loading, error } = useQuery(GET_BOOKS);
+  const { data, loading, error, refetch } = useQuery(GET_BOOKS);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   if (loading) return <Loading />;
   if (error) {

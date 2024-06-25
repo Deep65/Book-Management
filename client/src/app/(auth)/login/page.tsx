@@ -34,15 +34,37 @@ export default function Login() {
     resolver: yupResolver(schema),
   });
 
-  const [login, { data, loading, error }] = useMutation(LOGIN_USER);
+  const [login, { loading, error }] = useMutation(LOGIN_USER);
+
+  const isJWT = (token: string): boolean => {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      return false;
+    }
+
+    try {
+      const header = JSON.parse(
+        atob(parts[0].replace(/-/g, "+").replace(/_/g, "/"))
+      );
+      const payload = JSON.parse(
+        atob(parts[1].replace(/-/g, "+").replace(/_/g, "/"))
+      );
+      return typeof header === "object" && typeof payload === "object";
+    } catch (e) {
+      return false;
+    }
+  };
 
   const onSubmit = async (formData: ILoginForm) => {
     try {
-      await login({ variables: formData });
-      if (data) {
+      const { data } = await login({ variables: formData });
+      console.log(data.login, "data");
+      if (isJWT(data?.login)) {
         setCookie("token", data?.login);
         toast.success("Login successful!");
         router.push("/books");
+      } else {
+        toast.error("Invalid Credentials");
       }
     } catch (err) {
       console.error("Login error", err);
